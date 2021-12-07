@@ -1,5 +1,4 @@
 import fs from "fs";
-import r, { min } from 'ramda'
 
 const file = fs.readFileSync("./13/in.txt", "utf-8");
 
