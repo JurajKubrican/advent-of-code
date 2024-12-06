@@ -26,3 +26,5 @@ go build -o day6 .
 ```go run . in.txt  0.92s user 0.61s system 139% cpu 1.094 total```
 - not copying memory 
 ```go run . in.txt  0.74s user 0.60s system 136% cpu 0.989 total```
+- decrease memeory in hit tracking map
+```go run . in.txt  0.70s user 0.51s system 133% cpu 0.907 total```

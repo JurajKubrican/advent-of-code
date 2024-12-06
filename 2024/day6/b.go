@@ -39,7 +39,6 @@ func b() {
 				continue
 			}
 
-			// tempMatrix := deepCopyMatrix(matrix)
 			tempGuard := make([]int, 2)
 			copy(tempGuard, guard)
 			tempGuardDir := '^'
@@ -55,12 +54,11 @@ func b() {
 	}
 
 	fmt.Println(total)
-	// printMatrix(matrix)
 
 }
 
 func traverseIsLoop(matrix [][]rune, guard []int, guardDir rune) bool {
-	hitMap := make([][][]int, len(matrix))
+	hitMap := make([][][]bool, len(matrix))
 
 	for true {
 		next := getNeighbor(matrix, guard[0], guard[1], guardDir)
@@ -74,13 +72,10 @@ func traverseIsLoop(matrix [][]rune, guard []int, guardDir rune) bool {
 			if res == true {
 				return true
 			}
-			// fmt.Println("TURN", guardDir)
 			continue
 		}
 		if next == '.' || next == 'X' || next == '^' {
 			guard[0], guard[1] = proceed(guard[0], guard[1], guardDir)
-			// fmt.Println("PROCEED", guardDir)
-			matrix[guard[0]][guard[1]] = 'X'
 			continue
 		}
 
@@ -97,31 +92,35 @@ func deepCopyMatrix(matrix [][]rune) [][]rune {
 	return res
 }
 
-func countHitFromDirection(hitMap [][][]int, i, j int, dir rune) bool {
+func countHitFromDirection(hitMap [][][]bool, i, j int, dir rune) bool {
 	if hitMap[i] == nil {
-		hitMap[i] = make([][]int, len(hitMap))
+		hitMap[i] = make([][]bool, len(hitMap))
 	}
 	if hitMap[i][j] == nil {
-		hitMap[i][j] = make([]int, 4)
+		hitMap[i][j] = []bool{false, false, false, false}
 	}
-	res := 0
 	switch dir {
 	case '^':
-		hitMap[i][j][0]++
-		res = hitMap[i][j][0]
+		if hitMap[i][j][0] {
+			return true
+		}
+		hitMap[i][j][0] = true
 	case '>':
-		hitMap[i][j][1]++
-		res = hitMap[i][j][1]
+		if hitMap[i][j][1] {
+			return true
+		}
+		hitMap[i][j][1] = true
 	case 'v':
-		hitMap[i][j][2]++
-		res = hitMap[i][j][2]
+		if hitMap[i][j][2] {
+			return true
+		}
+		hitMap[i][j][2] = true
 	case '<':
-		hitMap[i][j][3]++
-		res = hitMap[i][j][3]
+		if hitMap[i][j][3] {
+			return true
+		}
+		hitMap[i][j][3] = true
 	}
-	if res > 1 {
-		// fmt.Println("loop")
-		return true
-	}
+
 	return false
 }
