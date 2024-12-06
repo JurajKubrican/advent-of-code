@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"golang.org/x/exp/slices"
 )
@@ -12,15 +11,15 @@ func a() {
 
 	total := 0
 
-	matrix := make([][]string, 0)
+	matrix := make([][]rune, 0)
 	guard := make([]int, 2)
-	guardDir := "^"
+	guardDir := '^'
 
 	for scanner.Scan() {
 		line := getLine(scanner)
-		parts := strings.Split(line, "")
+		parts := []rune(line)
 		fmt.Println(parts)
-		index := slices.Index(parts, "^")
+		index := slices.Index(parts, '^')
 		if index != -1 {
 			guard[0] = len(matrix)
 			guard[1] = index
@@ -30,19 +29,19 @@ func a() {
 
 	for true {
 		next := getNeighbor(matrix, guard[0], guard[1], guardDir)
-		if next == "" {
+		if next == '~' {
 			break //done
 		}
-		if next == "#" {
+		if next == '#' {
 			guardDir = nextDirection(guardDir)
 			fmt.Println("TURN", guardDir)
 			continue
 		}
-		if next == "." || next == "X" || next == "^" {
+		if next == '.' || next == 'X' || next == '^' {
 
 			guard[0], guard[1] = proceed(guard[0], guard[1], guardDir)
 			fmt.Println("PROCEED", guardDir)
-			matrix[guard[0]][guard[1]] = "X"
+			matrix[guard[0]][guard[1]] = 'X'
 			continue
 		}
 
@@ -50,7 +49,7 @@ func a() {
 
 	for i := range matrix {
 		for j := range matrix[i] {
-			if matrix[i][j] == "X" || matrix[i][j] == "^" {
+			if matrix[i][j] == 'X' || matrix[i][j] == '^' {
 				total++
 			}
 		}
@@ -61,18 +60,18 @@ func a() {
 
 }
 
-func getPatchCopy(iStart, jStart int, matrix [][]string) [][]string {
-	patch := make([][]string, 3)
+func getPatchCopy(iStart, jStart int, matrix [][]rune) [][]rune {
+	patch := make([][]rune, 3)
 	for i := -1; i <= 1; i++ {
-		patch[i+1] = make([]string, 3)
+		patch[i+1] = make([]rune, 3)
 		for j := -1; j <= 1; j++ {
-			patch[i+1][j+1] = getOrDefault(iStart+i, jStart+j, matrix, ".")
+			patch[i+1][j+1] = getOrDefault(iStart+i, jStart+j, matrix, '.')
 		}
 	}
 	return patch
 }
 
-func isIndexInBounds(i, j int, matrix [][]string) bool {
+func isIndexInBounds(i, j int, matrix [][]rune) bool {
 	if i < 0 || j < 0 {
 		return false
 	}
@@ -84,14 +83,14 @@ func isIndexInBounds(i, j int, matrix [][]string) bool {
 	return i >= 0 && j >= 0 && i < maxI && j < maxJ
 }
 
-func getOrDefault(i, j int, matrix [][]string, fallback string) string {
+func getOrDefault(i, j int, matrix [][]rune, fallback rune) rune {
 	if isIndexInBounds(i, j, matrix) {
 		return matrix[i][j]
 	}
 	return fallback
 }
 
-func printMatrix(matrix [][]string) {
+func printMatrix(matrix [][]rune) {
 	for i := 0; i < len(matrix); i++ {
 		for j := 0; j < len(matrix[i]); j++ {
 			fmt.Print(matrix[i][j])
@@ -102,52 +101,52 @@ func printMatrix(matrix [][]string) {
 
 }
 
-func getNeighbor(matrix [][]string, i, j int, dir string) string {
-	if dir == "^" {
-		return getOrDefault(i-1, j, matrix, "")
+func getNeighbor(matrix [][]rune, i, j int, dir rune) rune {
+	if dir == '^' {
+		return getOrDefault(i-1, j, matrix, '~')
 	}
-	if dir == "v" {
-		return getOrDefault(i+1, j, matrix, "")
+	if dir == 'v' {
+		return getOrDefault(i+1, j, matrix, '~')
 	}
-	if dir == "<" {
-		return getOrDefault(i, j-1, matrix, "")
+	if dir == '<' {
+		return getOrDefault(i, j-1, matrix, '~')
 	}
-	if dir == ">" {
-		return getOrDefault(i, j+1, matrix, "")
+	if dir == '>' {
+		return getOrDefault(i, j+1, matrix, '~')
 	}
 
 	fmt.Println("UNKNOWN DIRECTION", dir)
-	return ""
+	return '~'
 }
 
-func nextDirection(dir string) string {
-	if dir == "^" {
-		return ">"
+func nextDirection(dir rune) rune {
+	if dir == '^' {
+		return '>'
 	}
-	if dir == ">" {
-		return "v"
+	if dir == '>' {
+		return 'v'
 	}
-	if dir == "v" {
-		return "<"
+	if dir == 'v' {
+		return '<'
 	}
-	if dir == "<" {
-		return "^"
+	if dir == '<' {
+		return '^'
 	}
 	fmt.Println("UNKNOWN DIRECTION", dir)
-	return ""
+	return '~'
 }
 
-func proceed(i, j int, dir string) (int, int) {
-	if dir == "^" {
+func proceed(i, j int, dir rune) (int, int) {
+	if dir == '^' {
 		return i - 1, j
 	}
-	if dir == "v" {
+	if dir == 'v' {
 		return i + 1, j
 	}
-	if dir == "<" {
+	if dir == '<' {
 		return i, j - 1
 	}
-	if dir == ">" {
+	if dir == '>' {
 		return i, j + 1
 	}
 
