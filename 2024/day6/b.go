@@ -17,12 +17,12 @@ func b() {
 	total := 0
 
 	// LOAD MATRIX
-	matrix := make([][]rune, 0)
+	matrix := make([][]byte, 0)
 	guard := make([]int, 2)
 
 	for scanner.Scan() {
 		line := getLine(scanner)
-		parts := []rune(line)
+		parts := []byte(line)
 
 		index := slices.Index(parts, '^')
 		if index != -1 {
@@ -32,7 +32,7 @@ func b() {
 		matrix = append(matrix, parts)
 	}
 
-	prevChar := ' '
+	prevChar := byte(' ')
 	for i := range matrix {
 		for j := range matrix[i] {
 			if matrix[i][j] == '#' {
@@ -41,7 +41,7 @@ func b() {
 
 			tempGuard := make([]int, 2)
 			copy(tempGuard, guard)
-			tempGuardDir := '^'
+			tempGuardDir := byte('^')
 			prevChar = matrix[i][j]
 			matrix[i][j] = '#'
 
@@ -57,7 +57,7 @@ func b() {
 
 }
 
-func traverseIsLoop(matrix [][]rune, guard []int, guardDir rune) bool {
+func traverseIsLoop(matrix [][]byte, guard []int, guardDir byte) bool {
 	hitMap := make([][][]bool, len(matrix))
 
 	for true {
@@ -83,16 +83,16 @@ func traverseIsLoop(matrix [][]rune, guard []int, guardDir rune) bool {
 	return false
 }
 
-func deepCopyMatrix(matrix [][]rune) [][]rune {
-	res := make([][]rune, len(matrix))
+func deepCopyMatrix(matrix [][]byte) [][]byte {
+	res := make([][]byte, len(matrix))
 	for i := range matrix {
-		res[i] = make([]rune, len(matrix[i]))
+		res[i] = make([]byte, len(matrix[i]))
 		copy(res[i], matrix[i])
 	}
 	return res
 }
 
-func countHitFromDirection(hitMap [][][]bool, i, j int, dir rune) bool {
+func countHitFromDirection(hitMap [][][]bool, i, j int, dir byte) bool {
 	if hitMap[i] == nil {
 		hitMap[i] = make([][]bool, len(hitMap))
 	}

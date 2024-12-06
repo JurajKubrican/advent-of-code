@@ -11,13 +11,13 @@ func a() {
 
 	total := 0
 
-	matrix := make([][]rune, 0)
+	matrix := make([][]byte, 0)
 	guard := make([]int, 2)
-	guardDir := '^'
+	guardDir := byte('^')
 
 	for scanner.Scan() {
 		line := getLine(scanner)
-		parts := []rune(line)
+		parts := []byte(line)
 		fmt.Println(parts)
 		index := slices.Index(parts, '^')
 		if index != -1 {
@@ -60,10 +60,10 @@ func a() {
 
 }
 
-func getPatchCopy(iStart, jStart int, matrix [][]rune) [][]rune {
-	patch := make([][]rune, 3)
+func getPatchCopy(iStart, jStart int, matrix [][]byte) [][]byte {
+	patch := make([][]byte, 3)
 	for i := -1; i <= 1; i++ {
-		patch[i+1] = make([]rune, 3)
+		patch[i+1] = make([]byte, 3)
 		for j := -1; j <= 1; j++ {
 			patch[i+1][j+1] = getOrDefault(iStart+i, jStart+j, matrix, '.')
 		}
@@ -71,7 +71,7 @@ func getPatchCopy(iStart, jStart int, matrix [][]rune) [][]rune {
 	return patch
 }
 
-func isIndexInBounds(i, j int, matrix [][]rune) bool {
+func isIndexInBounds(i, j int, matrix [][]byte) bool {
 	if i < 0 || j < 0 {
 		return false
 	}
@@ -83,14 +83,14 @@ func isIndexInBounds(i, j int, matrix [][]rune) bool {
 	return i >= 0 && j >= 0 && i < maxI && j < maxJ
 }
 
-func getOrDefault(i, j int, matrix [][]rune, fallback rune) rune {
+func getOrDefault(i, j int, matrix [][]byte, fallback byte) byte {
 	if isIndexInBounds(i, j, matrix) {
 		return matrix[i][j]
 	}
 	return fallback
 }
 
-func printMatrix(matrix [][]rune) {
+func printMatrix(matrix [][]byte) {
 	for i := 0; i < len(matrix); i++ {
 		for j := 0; j < len(matrix[i]); j++ {
 			fmt.Print(matrix[i][j])
@@ -101,7 +101,7 @@ func printMatrix(matrix [][]rune) {
 
 }
 
-func getNeighbor(matrix [][]rune, i, j int, dir rune) rune {
+func getNeighbor(matrix [][]byte, i, j int, dir byte) byte {
 	if dir == '^' {
 		return getOrDefault(i-1, j, matrix, '~')
 	}
@@ -119,7 +119,7 @@ func getNeighbor(matrix [][]rune, i, j int, dir rune) rune {
 	return '~'
 }
 
-func nextDirection(dir rune) rune {
+func nextDirection(dir byte) byte {
 	if dir == '^' {
 		return '>'
 	}
@@ -136,7 +136,7 @@ func nextDirection(dir rune) rune {
 	return '~'
 }
 
-func proceed(i, j int, dir rune) (int, int) {
+func proceed(i, j int, dir byte) (int, int) {
 	if dir == '^' {
 		return i - 1, j
 	}
