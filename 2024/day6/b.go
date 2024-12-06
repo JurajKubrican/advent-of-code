@@ -7,6 +7,13 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const (
+	Up    = 1 << iota // 1 << 0 which is 0001
+	Down              // 1 << 1 which is 0010
+	Left              // 1 << 2 which is 0100
+	Right             // 1 << 3 which is 1000
+)
+
 func b() {
 	inputFile := "in.txt"
 	if len(os.Args) == 2 {
@@ -62,7 +69,8 @@ func b() {
 }
 
 func traverseIsLoop(matrix [][]byte, guard []int, guardDir byte, mark bool) bool {
-	hitMap := make([][][]bool, len(matrix))
+	// hitMap := make([][][]bool, len(matrix))
+	hitMap := map[int]byte{}
 
 	for true {
 		next := getNeighbor(matrix, guard[0], guard[1], guardDir)
@@ -90,44 +98,25 @@ func traverseIsLoop(matrix [][]byte, guard []int, guardDir byte, mark bool) bool
 	return false
 }
 
-func deepCopyMatrix(matrix [][]byte) [][]byte {
-	res := make([][]byte, len(matrix))
-	for i := range matrix {
-		res[i] = make([]byte, len(matrix[i]))
-		copy(res[i], matrix[i])
-	}
-	return res
-}
+func countHitFromDirection(hitMap map[int]byte, i, j int, dir byte) bool {
+	ind := i*1000 + j
 
-func countHitFromDirection(hitMap [][][]bool, i, j int, dir byte) bool {
-	if hitMap[i] == nil {
-		hitMap[i] = make([][]bool, len(hitMap))
-	}
-	if hitMap[i][j] == nil {
-		hitMap[i][j] = []bool{false, false, false, false}
-	}
+	var direction byte
 	switch dir {
 	case '^':
-		if hitMap[i][j][0] {
-			return true
-		}
-		hitMap[i][j][0] = true
-	case '>':
-		if hitMap[i][j][1] {
-			return true
-		}
-		hitMap[i][j][1] = true
+		direction = Up
 	case 'v':
-		if hitMap[i][j][2] {
-			return true
-		}
-		hitMap[i][j][2] = true
+		direction = Down
 	case '<':
-		if hitMap[i][j][3] {
-			return true
-		}
-		hitMap[i][j][3] = true
+		direction = Left
+	case '>':
+		direction = Right
 	}
 
+	if hitMap[ind]&direction != 0 {
+		return true
+	}
+
+	hitMap[ind] |= direction
 	return false
 }
