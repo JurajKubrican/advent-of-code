@@ -93,7 +93,7 @@ func getOrDefault(i, j int, matrix [][]byte, fallback byte) byte {
 func printMatrix(matrix [][]byte) {
 	for i := 0; i < len(matrix); i++ {
 		for j := 0; j < len(matrix[i]); j++ {
-			fmt.Print(matrix[i][j])
+			fmt.Print(string(matrix[i][j]))
 		}
 		fmt.Println()
 	}

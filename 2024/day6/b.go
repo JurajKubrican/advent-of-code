@@ -33,9 +33,10 @@ func b() {
 	}
 
 	prevChar := byte(' ')
+	isFirst := true
 	for i := range matrix {
 		for j := range matrix[i] {
-			if matrix[i][j] == '#' {
+			if !isFirst && (matrix[i][j] == '#' || matrix[i][j] == '.') {
 				continue
 			}
 
@@ -45,19 +46,22 @@ func b() {
 			prevChar = matrix[i][j]
 			matrix[i][j] = '#'
 
-			result := traverseIsLoop(matrix, tempGuard, tempGuardDir)
+			result := traverseIsLoop(matrix, tempGuard, tempGuardDir, isFirst)
 			if result {
 				total++
 			}
 			matrix[i][j] = prevChar
+			isFirst = false
+
 		}
 	}
+	// printMatrix(matrix)
 
 	fmt.Println(total)
 
 }
 
-func traverseIsLoop(matrix [][]byte, guard []int, guardDir byte) bool {
+func traverseIsLoop(matrix [][]byte, guard []int, guardDir byte, mark bool) bool {
 	hitMap := make([][][]bool, len(matrix))
 
 	for true {
@@ -76,6 +80,9 @@ func traverseIsLoop(matrix [][]byte, guard []int, guardDir byte) bool {
 		}
 		if next == '.' || next == 'X' || next == '^' {
 			guard[0], guard[1] = proceed(guard[0], guard[1], guardDir)
+			if mark {
+				matrix[guard[0]][guard[1]] = 'X'
+			}
 			continue
 		}
 

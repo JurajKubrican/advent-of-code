@@ -30,3 +30,5 @@ go build -o day6 .
 ```go run . in.txt  0.70s user 0.51s system 133% cpu 0.907 total```
 - byte instead of rune 
 ```go run . in.txt  0.67s user 0.54s system 136% cpu 0.887 total```
+- skip unvisited squares 
+```Time (mean ± σ):     113.6 ms ±   3.1 ms    [User: 121.9 ms, System: 24.9 ms]```
