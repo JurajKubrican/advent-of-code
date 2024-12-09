@@ -2,101 +2,128 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 )
 
-type Coords struct {
-	X int
-	Y int
+type File struct {
+	id   int
+	size int
+	pad  int
+	// moved bool
 }
 
 func a() {
-	scanner := getScanner("test.txt")
+	scanner := getScanner("in.txt")
 
-	total := 0
+	scanner.Scan()
+	line := scanner.Text()
 
-	antennas := make(map[rune][]Coords, 200)
-	lastIndex := Coords{0, 0}
-	j := -1
-	for scanner.Scan() {
-		j++
-		line := getLine(scanner)
-		lastIndex.Y = len(line) - 1
-		for i, c := range line {
-
-			if c == '.' {
-				continue
-			}
-			if _, ok := antennas[c]; !ok {
-				antennas[c] = make([]Coords, 0)
-			}
-			antennas[c] = append(antennas[c], Coords{j, i})
+	parts := strings.Split(line, "")
+	files := make([]File, 0)
+	for i, p := range parts {
+		res, err := strconv.Atoi(p)
+		if i%2 == 0 {
+			files = append(files, File{size: res, id: i / 2})
+		} else {
+			files[len(files)-1].pad = res
 		}
-	}
-	lastIndex.X = j
-
-	results := makeMatrix(lastIndex.X+1, lastIndex.Y+1, '.')
-	fmt.Println(antennas)
-
-	for sym, locations := range antennas {
-		fmt.Println(string(sym), locations)
-
-		for i := range locations {
-			for j := i + 1; j < len(locations); j++ {
-				a := locations[i]
-				b := locations[j]
-				antinodeA := getAntinode(a, b)
-				if isIndexInBounds(antinodeA, lastIndex) {
-					results[antinodeA.X][antinodeA.Y] = '#'
-				}
-				antinodeB := getAntinode(b, a)
-				if isIndexInBounds(antinodeB, lastIndex) {
-					results[antinodeB.X][antinodeB.Y] = '#'
-				}
-
-			}
+		if err != nil {
+			fmt.Println("Error converting to int", p)
 		}
 	}
 
-	printMatrix(results)
-	total = countInMatrix(results, '#')
+	print(files)
 
-	fmt.Println("DONE", total, lastIndex)
-
-}
-
-func getAntinode(a Coords, b Coords) Coords {
-	dist := Coords{b.X - a.X, b.Y - a.Y}
-	return Coords{b.X + dist.X, b.Y + dist.Y}
-}
-
-func makeMatrix(x, y int, seed rune) [][]byte {
-	matrix := make([][]byte, x)
-	for i := range matrix {
-		matrix[i] = make([]byte, y)
-		for j := range matrix[i] {
-			matrix[i][j] = byte(seed)
+	for i := 0; !isAllOnLeft(files) && i < len(files); {
+		j := len(files) - 1
+		a := files[i]
+		if a.pad == 0 {
+			i++
+			continue
+		}
+		b := files[j]
+		if a.pad >= b.size {
+			pad := a.pad - b.size
+			files[i].pad = 0
+			b.pad = pad
+			files = safeInsert(files, i, b)
+			files = files[:len(files)-1]
+		} else { // need to split
+			movedSpace := a.pad
+			files[j].size -= movedSpace
+			files[i].pad = 0
+			newItem := File{
+				id:   b.id,
+				size: movedSpace,
+				pad:  0,
+			}
+			fmt.Println("NEW", newItem, j)
+			files = safeInsert(files, i, newItem)
 		}
 	}
-	return matrix
+	files[len(files)-1].pad = 0
+	print(files)
+
+	fmt.Println("DONE", calculateChecksum(files))
 }
 
-func printMatrix(matrix [][]byte) {
-	for i := range matrix {
-		fmt.Println(string(matrix[i]))
+func print(files []File) {
+	for _, f := range files {
+		for i := 0; i < f.size; i++ {
+			fmt.Print(f.id, " ")
+
+		}
+		for i := 0; i < f.pad; i++ {
+			fmt.Print(".")
+		}
+
 	}
-}
-func isIndexInBounds(item Coords, lastIndex Coords) bool {
-	return item.X >= 0 && item.X <= lastIndex.X && item.Y >= 0 && item.Y <= lastIndex.Y
 
+	fmt.Println()
 }
-func countInMatrix(matrix [][]byte, item rune) int {
-	total := 0
-	for i := range matrix {
-		for j := range matrix[i] {
-			if rune(matrix[i][j]) == item {
-				total++
-			}
+
+func calculateChecksum(files []File) int64 {
+	total := int64(0)
+	ind := int64(0)
+	for _, f := range files {
+		for i := 0; i < f.size; i++ {
+			total += int64(f.id) * ind
+			ind++
+
 		}
 	}
 	return total
+
+}
+
+func safeInsert(slice []File, index int, element File) []File {
+	index++
+	if index < 0 || index > len(slice) {
+		panic("index out of range")
+	}
+
+	// Create a new slice with enough capacity to hold the original slice and the new element
+	newSlice := make([]File, len(slice)+1)
+
+	// Copy the elements before the insertion point
+	copy(newSlice, slice[:index])
+
+	// Insert the new element
+	newSlice[index] = element
+
+	// Copy the elements after the insertion point
+	copy(newSlice[index+1:], slice[index:])
+
+	return newSlice
+}
+
+func isAllOnLeft(files []File) bool {
+	for i, f := range files {
+		if f.id >= 0 && f.pad > 0 && i < len(files)-1 {
+			return false
+		}
+
+	}
+	return true
 }
