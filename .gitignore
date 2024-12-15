@@ -43,3 +43,4 @@ yarn.lock
 # input files
 in.txt
 test.txt
+test*.txt

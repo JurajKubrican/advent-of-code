@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	a()
-	// b()
+	// a()
+	b()
 }
 
 func getScanner(in string) *bufio.Scanner {
