@@ -2,77 +2,87 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 )
+
+var wordToDigit = map[string]string{
+	"1":     "1",
+	"2":     "2",
+	"3":     "3",
+	"4":     "4",
+	"5":     "5",
+	"6":     "6",
+	"7":     "7",
+	"8":     "8",
+	"9":     "9",
+	"one":   "1",
+	"two":   "2",
+	"three": "3",
+	"four":  "4",
+	"five":  "5",
+	"six":   "6",
+	"seven": "7",
+	"eight": "8",
+	"nine":  "9",
+}
 
 func b() {
 	scanner := getScanner("in.txt")
 
 	sum := 0
 
-	// Define a map of words to digits
-
-	// Create a regular expression pattern to match any of the words
-	pattern := regexp.MustCompile(strings.Join(keys(wordToDigit), "|"))
-
 	for scanner.Scan() {
 		line := scanner.Text()
-
-		// Replace words with corresponding digits using the regular expression
-		line = pattern.ReplaceAllStringFunc(line, func(matched string) string {
-			return wordToDigit[matched]
-		})
-
 		fmt.Println(line)
-		a := 0
-		for _, c := range line {
-			num, err := strconv.Atoi(string(c))
-			if err == nil {
-				a = num
-				fmt.Println(num)
+
+		first := ""
+		last := ""
+
+		// first
+		for len(line) > 0 {
+			found := false
+			for word, digit := range wordToDigit {
+				found = strings.HasPrefix(line, word)
+
+				if found {
+					first = digit
+					break
+				}
+			}
+			if !found {
+				line = line[1:]
+				fmt.Println(line)
+			} else {
 				break
 			}
 		}
-		b := 0
-		for i := range line {
-			c := line[len(line)-i-1]
-			num, err := strconv.Atoi(string(c))
-			if err == nil {
-				b = num
-				fmt.Println(num)
+
+		for len(line) > 0 {
+			found := false
+			for word, digit := range wordToDigit {
+				found = strings.HasSuffix(line, word)
+
+				if found {
+					last = digit
+					break
+				}
+			}
+			if !found {
+				line = line[:len(line)-1]
+			} else {
 				break
 			}
 		}
-		res, _ := strconv.Atoi(strconv.Itoa(a) + strconv.Itoa(b))
+
+		fmt.Println(first, last)
+		res, err := strconv.Atoi(first + last)
+		if err != nil {
+			fmt.Println(err)
+		}
 		sum += res
 
 	}
 
 	fmt.Println(sum)
-
-}
-
-
-
-
-func getNum(in string) int {
-
-	wordToDigit := map[string]int{
-		"one":   1,
-		"two":   2,
-		"three": 3,
-		"four":  4,
-		"five":  5,
-		"six":  6,
-		"seven": 7,
-		"eight": 8,
-		"nine":  9,
-		"zero":  0,
-	}
-
-	
-	for key, value := range (wordToDigit)
- if string.HasPrefix()
 }
